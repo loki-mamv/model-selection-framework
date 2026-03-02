@@ -817,7 +817,14 @@
 <section class="slide" data-title="Quality Comparison">
     <div class="label">Benchmarks</div>
     <h2>Quality Score Comparison</h2>
-    <p class="subtitle" style="margin-bottom: 10px;">Independent quality scores (Theozard benchmark, 0–100). Higher = better.</p>
+    <p class="subtitle" style="margin-bottom: 16px;">Independent quality scores (Theozard benchmark, 0–100). Higher = better.</p>
+
+    <div style="display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
+        <span style="display:flex; align-items:center; gap:6px; font-size:0.8rem;"><span style="width:14px;height:14px;border-radius:3px;background:linear-gradient(90deg, var(--tier1), #fbbf24);display:inline-block;"></span><span style="color:var(--tier1);">Tier 1 — Frontier</span></span>
+        <span style="display:flex; align-items:center; gap:6px; font-size:0.8rem;"><span style="width:14px;height:14px;border-radius:3px;background:linear-gradient(90deg, var(--tier2), #a78bfa);display:inline-block;"></span><span style="color:var(--tier2);">Tier 2 — Performance</span></span>
+        <span style="display:flex; align-items:center; gap:6px; font-size:0.8rem;"><span style="width:14px;height:14px;border-radius:3px;background:linear-gradient(90deg, var(--tier3), #22d3ee);display:inline-block;"></span><span style="color:var(--tier3);">Tier 3 — Value</span></span>
+        <span style="display:flex; align-items:center; gap:6px; font-size:0.8rem;"><span style="width:14px;height:14px;border-radius:3px;background:linear-gradient(90deg, var(--tier4), #4ade80);display:inline-block;"></span><span style="color:var(--tier4);">Tier 4 — Local</span></span>
+    </div>
 
     <div class="bar-chart" id="qualityChart">
         <div class="bar-row"><span class="bar-label mono" style="color:var(--tier1)">Opus 4.6</span><div class="bar-track"><div class="bar-fill" style="width:100%; background: linear-gradient(90deg, var(--tier1), #fbbf24);" data-width="100">100</div></div></div>
