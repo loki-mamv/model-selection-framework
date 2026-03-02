@@ -720,7 +720,7 @@
     <div class="table-wrap">
         <table>
             <thead>
-                <tr><th>Model</th><th>Params</th><th>VRAM (Q4)</th><th>Your Mac Mini (M4/16GB)</th><th>Strengths</th></tr>
+                <tr><th>Model</th><th>Params</th><th>VRAM (Q4)</th><th>Apple M4 (16GB)</th><th>Strengths</th></tr>
             </thead>
             <tbody>
                 <tr class="highlight-row">
@@ -763,7 +763,7 @@
     </div>
 
     <div class="callout">
-        <strong>⚠️ Your hardware (M4 Mac Mini, 16GB):</strong> Comfortable with anything ≤9B. Models 12B+ will run but leave little headroom for OS + other apps. The Qwen 3.5-9B is the sweet spot — best tool calling of any local model, and fits comfortably.
+        <strong>⚠️ On a typical M4 Mac (16GB):</strong> Comfortable with anything ≤9B. Models 12B+ will run but leave little headroom for OS + other apps. The Qwen 3.5-9B is the sweet spot — best tool calling of any local model, and fits comfortably.
     </div>
     <span class="slide-num">06</span>
 </section>
@@ -782,8 +782,8 @@
             <div class="stat"><span class="stat-label">Ideal RAM</span><span class="stat-value">16 GB</span></div>
             <div class="stat"><span class="stat-label">Speed</span><span class="stat-value">40–100 t/s</span></div>
             <div class="stat"><span class="stat-label">Hardware</span><span class="stat-value">M1+ Mac, RTX 3060</span></div>
-            <div class="stat"><span class="stat-label">Your Mini</span><span class="stat-value green">✅ Perfect</span></div>
-            <div class="stat"><span class="stat-label">Cost</span><span class="stat-value">$0 (already own it)</span></div>
+            <div class="stat"><span class="stat-label">M4 16GB</span><span class="stat-value green">✅ Perfect</span></div>
+            <div class="stat"><span class="stat-label">Cost</span><span class="stat-value">$0 (hardware only)</span></div>
         </div>
         <div class="card" style="border-top: 3px solid var(--accent2);">
             <h3>Medium (12B–35B)</h3>
@@ -792,7 +792,7 @@
             <div class="stat"><span class="stat-label">Ideal RAM</span><span class="stat-value">32–48 GB</span></div>
             <div class="stat"><span class="stat-label">Speed</span><span class="stat-value">15–40 t/s</span></div>
             <div class="stat"><span class="stat-label">Hardware</span><span class="stat-value">M2 Pro+ 32GB, RTX 4090</span></div>
-            <div class="stat"><span class="stat-label">Your Mini</span><span class="stat-value red">❌ Not enough RAM</span></div>
+            <div class="stat"><span class="stat-label">M4 16GB</span><span class="stat-value red">❌ Not enough RAM</span></div>
             <div class="stat"><span class="stat-label">Upgrade</span><span class="stat-value">~$800–$1,600</span></div>
         </div>
         <div class="card" style="border-top: 3px solid var(--tier1);">
@@ -802,13 +802,13 @@
             <div class="stat"><span class="stat-label">Ideal RAM</span><span class="stat-value">96–192 GB</span></div>
             <div class="stat"><span class="stat-label">Speed</span><span class="stat-value">3–15 t/s</span></div>
             <div class="stat"><span class="stat-label">Hardware</span><span class="stat-value">M2 Ultra, multi-GPU</span></div>
-            <div class="stat"><span class="stat-label">Your Mini</span><span class="stat-value red">❌ Way too big</span></div>
+            <div class="stat"><span class="stat-label">M4 16GB</span><span class="stat-value red">❌ Way too big</span></div>
             <div class="stat"><span class="stat-label">Upgrade</span><span class="stat-value">$3,000–$10,000+</span></div>
         </div>
     </div>
 
     <div class="callout">
-        <strong>Bottom line:</strong> Your M4 Mini with 16GB is a great Tier 4 machine for ≤9B models. To run 35B models, you'd need to upgrade to a Mac Mini with 32GB+ ($800+) or a Mac Studio. For 70B+, you're looking at M2/M4 Ultra territory ($4K+) or cloud hosting.
+        <strong>Bottom line:</strong> A base M4 Mac with 16GB is a great Tier 4 machine for ≤9B models. For 35B models, you need 32GB+ ($800+ upgrade). For 70B+, you're looking at M2/M4 Ultra territory ($4K+) or multi-GPU cloud hosting.
     </div>
     <span class="slide-num">07</span>
 </section>
@@ -986,24 +986,24 @@
 </section>
 
 <!-- SLIDE 11: Your Real-World Scenarios -->
-<section class="slide" data-title="Your Scenarios">
+<section class="slide" data-title="Real-World Scenarios">
     <div class="label">Applied</div>
-    <h2>Mike's Scenarios</h2>
-    <p class="subtitle" style="margin-bottom:20px;">How this framework maps to your actual work.</p>
+    <h2>Real-World Scenarios</h2>
+    <p class="subtitle" style="margin-bottom:20px;">How the framework maps to actual business workflows.</p>
 
     <div class="scenario">
         <div class="scenario-header">
-            <span class="scenario-title">🏥 GenHealth — Prior Auth Processing</span>
+            <span class="scenario-title">🏥 Healthcare — Clinical Document Processing</span>
             <span class="tier-badge tier-3">Tier 3 → DeepSeek V3.2</span>
         </div>
         <div class="scenario-detail">
-            High volume, structured extraction from clinical docs. Doesn't need creative reasoning — needs reliable JSON output at scale. <strong>$0.25/M input vs $5/M on Opus = 20x savings.</strong> Use Tier 1 only for edge cases / appeals writing.
+            High volume, structured extraction from clinical docs. Doesn't need creative reasoning — needs reliable JSON output at scale. <strong>$0.25/M input vs $5/M on a frontier model = 20x savings.</strong> Reserve Tier 1 for complex appeals or edge cases.
         </div>
     </div>
 
     <div class="scenario">
         <div class="scenario-header">
-            <span class="scenario-title">📊 Sales Pitch Decks & Strategy</span>
+            <span class="scenario-title">📊 Sales — Pitch Decks & Competitive Strategy</span>
             <span class="tier-badge tier-1">Tier 1 → Opus 4.6</span>
         </div>
         <div class="scenario-detail">
@@ -1013,7 +1013,7 @@
 
     <div class="scenario">
         <div class="scenario-header">
-            <span class="scenario-title">📧 Email Triage & Drafting</span>
+            <span class="scenario-title">📧 Operations — Email Triage & Drafting</span>
             <span class="tier-badge tier-2">Tier 2 → Kimi K2.5</span>
         </div>
         <div class="scenario-detail">
@@ -1023,21 +1023,21 @@
 
     <div class="scenario">
         <div class="scenario-header">
-            <span class="scenario-title">🤖 Loki's Heartbeats & Background Agents</span>
+            <span class="scenario-title">🤖 DevOps — Always-On Background Agents</span>
             <span class="tier-badge tier-4">Tier 4 → Qwen 3.5-9B (local)</span>
         </div>
         <div class="scenario-detail">
-            Triage checks, tool routing, simple classification running 24/7. Currently uses Haiku ($1/M). <strong>Local model = $0 forever, no API dependency, faster response.</strong> Run on the Mac Mini you already own.
+            Triage checks, tool routing, simple classification running 24/7. API models cost $1–5/M per call. <strong>Local model = $0 forever, no API dependency, sub-100ms response.</strong> Runs on a $600 Mac Mini.
         </div>
     </div>
 
     <div class="scenario">
         <div class="scenario-header">
-            <span class="scenario-title">🌐 .MD Health Site — Q&A Widget</span>
+            <span class="scenario-title">🌐 Content — User-Facing Q&A Widget</span>
             <span class="tier-badge tier-3">Tier 3 → Gemini 2.5 Flash</span>
         </div>
         <div class="scenario-detail">
-            User-facing health Q&A needs to be good but also cheap at scale. Gemini has a free tier (1K req/day) and 2M context for loading medical references. <strong>Free up to ~30K queries/month.</strong>
+            User-facing Q&A needs to be good but also cheap at scale. Gemini has a free tier (1K req/day) and 2M context for loading reference docs. <strong>Free up to ~30K queries/month.</strong>
         </div>
     </div>
     <span class="slide-num">11</span>
@@ -1087,7 +1087,77 @@
     <span class="slide-num">12</span>
 </section>
 
-<!-- SLIDE 13: Key Takeaways -->
+<!-- SLIDE 13: Prompt Examples -->
+<section class="slide" data-title="Prompt Examples by Tier">
+    <div class="label">Examples</div>
+    <h2>Same Task, Different Tiers</h2>
+    <p class="subtitle" style="margin-bottom: 20px;">See what each tier handles well — and where it breaks down.</p>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:18%;">Task</th>
+                    <th style="width:18%; color:var(--tier1);">Tier 1 — Frontier</th>
+                    <th style="width:18%; color:var(--tier2);">Tier 2 — Performance</th>
+                    <th style="width:18%; color:var(--tier3);">Tier 3 — Value</th>
+                    <th style="width:18%; color:var(--tier4);">Tier 4 — Local 9B</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>"Write a cold email to a VP of Ops"</strong></td>
+                    <td class="green">Nails tone, personalization, subtle persuasion. Feels human-written.</td>
+                    <td class="green">Solid. Maybe slightly formulaic but effective.</td>
+                    <td class="orange">Functional but generic. Needs editing.</td>
+                    <td class="red">Template-quality. Obvious AI voice.</td>
+                </tr>
+                <tr>
+                    <td><strong>"Extract all dates, names, and dollar amounts from this contract"</strong></td>
+                    <td class="green">Perfect but overkill — paying $25/M for a parsing task.</td>
+                    <td class="green">Great. Reliable JSON output.</td>
+                    <td class="green">Just as good. This is its sweet spot.</td>
+                    <td class="green">Handles it well with tool calling. Free.</td>
+                </tr>
+                <tr>
+                    <td><strong>"Analyze this competitor's 10-K filing and identify 3 strategic risks"</strong></td>
+                    <td class="green">Deep, nuanced analysis. Catches subtle signals.</td>
+                    <td class="blue">Good analysis, may miss subtle cross-references.</td>
+                    <td class="orange">Surface-level. Lists obvious points.</td>
+                    <td class="red">Struggles with long docs and multi-step reasoning.</td>
+                </tr>
+                <tr>
+                    <td><strong>"Is this support ticket urgent, normal, or spam?"</strong></td>
+                    <td class="orange">Works but you're burning $5/M on a yes/no decision.</td>
+                    <td class="orange">Still overkill for classification.</td>
+                    <td class="green">Perfect. Pennies per thousand tickets.</td>
+                    <td class="green">Instant, free, runs locally. Best option.</td>
+                </tr>
+                <tr>
+                    <td><strong>"Debug why this React component re-renders infinitely"</strong></td>
+                    <td class="green">Identifies root cause + architectural fix.</td>
+                    <td class="green">Usually finds it. Best cost/quality for code.</td>
+                    <td class="blue">Can spot common patterns. Misses edge cases.</td>
+                    <td class="orange">Hit or miss. Simple bugs only.</td>
+                </tr>
+                <tr>
+                    <td><strong>"Summarize these 50 customer interviews into themes"</strong></td>
+                    <td class="green">Rich thematic analysis with supporting quotes.</td>
+                    <td class="green">Solid themes, good structure.</td>
+                    <td class="green">Competent summaries. Slightly less nuanced.</td>
+                    <td class="orange">Can do it but slow (50 docs × 9B = queue time).</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout">
+        <strong>The pattern:</strong> Frontier models shine on <em>judgment</em> tasks (persuasion, strategy, nuance). Value and local models are equally good at <em>mechanical</em> tasks (parsing, classification, extraction). Most teams overspend by using frontier models for mechanical work.
+    </div>
+    <span class="slide-num">13</span>
+</section>
+
+<!-- SLIDE 14: Takeaways -->
 <section class="slide" data-title="Takeaways">
     <div class="label">Summary</div>
     <h2>Key Takeaways</h2>
@@ -1103,7 +1173,7 @@
         </div>
         <div class="card">
             <h3 style="color:var(--tier4);">🏠 Local models are finally useful</h3>
-            <p style="font-size:0.9rem; color:var(--text-dim);">Qwen 3.5-9B has best-in-class tool calling (beats 30B and 80B models). Runs at 50 t/s on your Mac Mini for $0. The agent-on-device era is here.</p>
+            <p style="font-size:0.9rem; color:var(--text-dim);">Qwen 3.5-9B has best-in-class tool calling (beats 30B and 80B models). Runs at 50 t/s on a $600 Mac Mini for $0. The agent-on-device era is here.</p>
         </div>
         <div class="card">
             <h3 style="color:var(--accent);">📐 Layer your tiers</h3>
@@ -1117,7 +1187,7 @@
             Pricing changes frequently — verify before making purchasing decisions.
         </p>
     </div>
-    <span class="slide-num">13</span>
+    <span class="slide-num">14</span>
 </section>
 
 <script>
