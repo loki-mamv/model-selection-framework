@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Model Selection Framework — March 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --bg-card: #111827;
+            --bg-card-hover: #1a2332;
+            --text: #e2e8f0;
+            --text-dim: #94a3b8;
+            --text-bright: #f8fafc;
+            --accent: #38bdf8;
+            --accent2: #818cf8;
+            --accent3: #34d399;
+            --accent4: #fb923c;
+            --danger: #f87171;
+            --border: #1e293b;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            /* Tier colors */
+            --tier1: #f59e0b;
+            --tier2: #8b5cf6;
+            --tier3: #06b6d4;
+            --tier4: #22c55e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-display);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .slide {
+            min-height: 100vh;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px 80px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            position: relative;
+        }
+
+        .slide.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            width: 0%;
+            z-index: 100;
+            transition: width 0.3s ease;
+        }
+
+        /* Nav dots */
+        .nav-dots {
+            position: fixed;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-dot:hover, .nav-dot.active {
+            background: var(--accent);
+            transform: scale(1.4);
+        }
+
+        .nav-dot .tooltip {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .nav-dot:hover .tooltip {
+            opacity: 1;
+        }
+
+        /* Slide number */
+        .slide-num {
+            position: absolute;
+            bottom: 30px;
+            right: 60px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-dim);
+            opacity: 0.4;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 3.2rem;
+            font-weight: 700;
+            line-height: 1.15;
+            margin-bottom: 20px;
+            letter-spacing: -0.03em;
+        }
+
+        h2 {
+            font-size: 2.4rem;
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-dim);
+            max-width: 700px;
+            line-height: 1.7;
+        }
+
+        .label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            margin-bottom: 12px;
+        }
+
+        /* Tier badge */
+        .tier-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .tier-1 { background: rgba(245,158,11,0.15); color: var(--tier1); border: 1px solid rgba(245,158,11,0.3); }
+        .tier-2 { background: rgba(139,92,246,0.15); color: var(--tier2); border: 1px solid rgba(139,92,246,0.3); }
+        .tier-3 { background: rgba(6,182,212,0.15); color: var(--tier3); border: 1px solid rgba(6,182,212,0.3); }
+        .tier-4 { background: rgba(34,197,94,0.15); color: var(--tier4); border: 1px solid rgba(34,197,94,0.3); }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .card-grid-2 { grid-template-columns: 1fr 1fr; }
+        .card-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .card-grid-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            background: var(--bg-card-hover);
+            border-color: rgba(56,189,248,0.3);
+            transform: translateY(-2px);
+        }
+
+        .card h3 {
+            color: var(--text-bright);
+        }
+
+        .card .price {
+            font-family: var(--font-mono);
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .card .price-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        .card .stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+
+        .card .stat:last-child { border-bottom: none; }
+        .card .stat-label { color: var(--text-dim); }
+        .card .stat-value { color: var(--text-bright); font-family: var(--font-mono); font-weight: 500; }
+
+        /* Tables */
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            color: var(--accent);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover td { background: rgba(56,189,248,0.03); }
+
+        .highlight-row td {
+            background: rgba(56,189,248,0.06);
+        }
+
+        .mono { font-family: var(--font-mono); font-weight: 500; }
+        .green { color: var(--accent3); }
+        .blue { color: var(--accent); }
+        .purple { color: var(--accent2); }
+        .orange { color: var(--accent4); }
+        .red { color: var(--danger); }
+        .gold { color: var(--tier1); }
+        .dim { color: var(--text-dim); }
+
+        /* Bar chart */
+        .bar-chart {
+            margin-top: 20px;
+        }
+
+        .bar-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 12px;
+        }
+
+        .bar-label {
+            width: 180px;
+            font-size: 0.85rem;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .bar-track {
+            flex: 1;
+            height: 28px;
+            background: var(--bg-card);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--bg);
+        }
+
+        .bar-fill.animate { width: 0 !important; }
+
+        /* Decision flow */
+        .flow {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-top: 24px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+        }
+
+        .flow-question {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 24px;
+            flex: 1;
+            font-size: 0.95rem;
+        }
+
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            color: var(--text-dim);
+            font-size: 1.2rem;
+        }
+
+        .flow-answer {
+            display: flex;
+            gap: 10px;
+        }
+
+        .flow-option {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 18px;
+            font-size: 0.8rem;
+            min-width: 140px;
+            text-align: center;
+        }
+
+        /* Scenario cards */
+        .scenario {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 12px;
+        }
+
+        .scenario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .scenario-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .scenario-detail {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .scenario-detail strong {
+            color: var(--text-bright);
+        }
+
+        /* Hardware specs */
+        .hw-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .hw-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hw-model {
+            font-weight: 600;
+        }
+
+        .hw-specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .hw-spec {
+            font-size: 0.8rem;
+        }
+
+        .hw-spec-label {
+            color: var(--text-dim);
+            font-size: 0.7rem;
+        }
+
+        /* Highlights */
+        .callout {
+            background: rgba(56,189,248,0.08);
+            border-left: 3px solid var(--accent);
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .callout strong { color: var(--accent); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .slide { padding: 40px 24px; }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.6rem; }
+            .card-grid-2, .card-grid-3, .card-grid-4 { grid-template-columns: 1fr; }
+            .bar-label { width: 100px; font-size: 0.75rem; }
+            .nav-dots { display: none; }
+        }
+
+        @media (max-width: 480px) {
+            .slide { padding: 30px 16px; }
+            h1 { font-size: 1.6rem; }
+            h2 { font-size: 1.3rem; }
+            .subtitle { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<div class="nav-dots" id="navDots"></div>
+
+<!-- SLIDE 1: Title -->
+<section class="slide" data-title="Overview">
+    <div class="label">Model Selection Framework</div>
+    <h1>Which AI Model<br>Should You Use?</h1>
+    <p class="subtitle">A practical framework for choosing between frontier, mid-tier, and local models — based on task type, cost, and performance. March 2026.</p>
+    <div style="margin-top: 40px; display: flex; gap: 12px; flex-wrap: wrap;">
+        <span class="tier-badge tier-1">Tier 1 — Frontier</span>
+        <span class="tier-badge tier-2">Tier 2 — Performance</span>
+        <span class="tier-badge tier-3">Tier 3 — Value</span>
+        <span class="tier-badge tier-4">Tier 4 — Local</span>
+    </div>
+    <span class="slide-num">01</span>
+</section>
+
+<!-- SLIDE 2: The Four Tiers -->
+<section class="slide" data-title="The Four Tiers">
+    <div class="label">Framework</div>
+    <h2>The Four Tiers</h2>
+    <div class="card-grid card-grid-4">
+        <div class="card" style="border-top: 3px solid var(--tier1);">
+            <span class="tier-badge tier-1" style="margin-bottom:12px;">Tier 1</span>
+            <h3>Frontier</h3>
+            <p style="font-size:0.85rem; color:var(--text-dim); margin-bottom:14px;">Maximum intelligence. Use when being wrong is expensive.</p>
+            <div class="stat"><span class="stat-label">Quality</span><span class="stat-value gold">94–100</span></div>
+            <div class="stat"><span class="stat-label">Cost</span><span class="stat-value">$5–$21/M in</span></div>
+            <div class="stat"><span class="stat-label">When</span><span class="stat-value">Complex reasoning</span></div>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--tier2);">
+            <span class="tier-badge tier-2" style="margin-bottom:12px;">Tier 2</span>
+            <h3>Performance</h3>
+            <p style="font-size:0.85rem; color:var(--text-dim); margin-bottom:14px;">85–95% of frontier quality at 50–90% less cost.</p>
+            <div class="stat"><span class="stat-label">Quality</span><span class="stat-value purple">85–96</span></div>
+            <div class="stat"><span class="stat-label">Cost</span><span class="stat-value">$0.45–$3/M in</span></div>
+            <div class="stat"><span class="stat-label">When</span><span class="stat-value">Daily driver tasks</span></div>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--tier3);">
+            <span class="tier-badge tier-3" style="margin-bottom:12px;">Tier 3</span>
+            <h3>Value</h3>
+            <p style="font-size:0.85rem; color:var(--text-dim); margin-bottom:14px;">Surprisingly capable. The Chinese lab revolution.</p>
+            <div class="stat"><span class="stat-label">Quality</span><span class="stat-value blue">75–89</span></div>
+            <div class="stat"><span class="stat-label">Cost</span><span class="stat-value">$0.05–$0.45/M in</span></div>
+            <div class="stat"><span class="stat-label">When</span><span class="stat-value">Volume, bulk, triage</span></div>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--tier4);">
+            <span class="tier-badge tier-4" style="margin-bottom:12px;">Tier 4</span>
+            <h3>Local / Edge</h3>
+            <p style="font-size:0.85rem; color:var(--text-dim); margin-bottom:14px;">Free forever. Runs on your hardware. Zero API dependency.</p>
+            <div class="stat"><span class="stat-label">Quality</span><span class="stat-value green">45–77</span></div>
+            <div class="stat"><span class="stat-label">Cost</span><span class="stat-value">$0 (self-hosted)</span></div>
+            <div class="stat"><span class="stat-label">When</span><span class="stat-value">Privacy, always-on</span></div>
+        </div>
+    </div>
+    <span class="slide-num">02</span>
+</section>
+
+<!-- SLIDE 3: Tier 1 — Frontier -->
+<section class="slide" data-title="Tier 1 — Frontier">
+    <div class="label">Tier 1</div>
+    <h2 style="color:var(--tier1);">Frontier Models</h2>
+    <p class="subtitle" style="margin-bottom:20px;">The smartest models available. Use when quality matters more than cost.</p>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Model</th><th>Quality</th><th>Input/M</th><th>Output/M</th><th>Context</th><th>Strengths</th></tr>
+            </thead>
+            <tbody>
+                <tr class="highlight-row">
+                    <td><strong>Claude Opus 4.6</strong></td>
+                    <td class="mono gold">100</td>
+                    <td class="mono">$5.00</td>
+                    <td class="mono">$25.00</td>
+                    <td class="mono">1M</td>
+                    <td>Best overall. Complex reasoning, nuance, long-form writing</td>
+                </tr>
+                <tr>
+                    <td><strong>GPT-5.2 Pro</strong></td>
+                    <td class="mono gold">96</td>
+                    <td class="mono">$21.00</td>
+                    <td class="mono">$168.00</td>
+                    <td class="mono">400K</td>
+                    <td>Hardest reasoning. Math, science, formal logic</td>
+                </tr>
+                <tr>
+                    <td><strong>GLM-5</strong></td>
+                    <td class="mono gold">94</td>
+                    <td class="mono green">$0.95</td>
+                    <td class="mono green">$2.55</td>
+                    <td class="mono">205K</td>
+                    <td>Frontier quality, value pricing. Zhipu AI dark horse</td>
+                </tr>
+                <tr>
+                    <td><strong>Gemini 3 Pro</strong></td>
+                    <td class="mono gold">91</td>
+                    <td class="mono">$2.00</td>
+                    <td class="mono">$12.00</td>
+                    <td class="mono">1M</td>
+                    <td>Multimodal king. Images, video, audio native</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout">
+        <strong>💡 GLM-5 anomaly:</strong> Quality 94 at $0.95/M input is absurd. That's frontier performance at Tier 3 pricing. Worth testing for your specific use case — if it works, you save 80%+ vs Opus.
+    </div>
+    <span class="slide-num">03</span>
+</section>
+
+<!-- SLIDE 4: Tier 2 — Performance -->
+<section class="slide" data-title="Tier 2 — Performance">
+    <div class="label">Tier 2</div>
+    <h2 style="color:var(--tier2);">Performance Models</h2>
+    <p class="subtitle" style="margin-bottom:20px;">The daily drivers. 85–95% of frontier quality, dramatically cheaper.</p>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Model</th><th>Quality</th><th>Input/M</th><th>Output/M</th><th>Context</th><th>Sweet Spot</th></tr>
+            </thead>
+            <tbody>
+                <tr class="highlight-row">
+                    <td><strong>GPT-5.2</strong></td>
+                    <td class="mono purple">96</td>
+                    <td class="mono">$1.75</td>
+                    <td class="mono">$14.00</td>
+                    <td class="mono">400K</td>
+                    <td>Coding, agents, structured output</td>
+                </tr>
+                <tr>
+                    <td><strong>Kimi K2.5</strong></td>
+                    <td class="mono purple">89</td>
+                    <td class="mono green">$0.45</td>
+                    <td class="mono green">$2.20</td>
+                    <td class="mono">262K</td>
+                    <td>Value score 40.5 — best $/quality ratio at this tier</td>
+                </tr>
+                <tr>
+                    <td><strong>Gemini 3 Flash</strong></td>
+                    <td class="mono purple">87</td>
+                    <td class="mono">$0.50</td>
+                    <td class="mono">$3.00</td>
+                    <td class="mono">1M</td>
+                    <td>Fast, multimodal, massive context window</td>
+                </tr>
+                <tr>
+                    <td><strong>GPT-5</strong></td>
+                    <td class="mono purple">85</td>
+                    <td class="mono">$1.25</td>
+                    <td class="mono">$10.00</td>
+                    <td class="mono">400K</td>
+                    <td>General flagship. Reliable all-rounder</td>
+                </tr>
+                <tr>
+                    <td><strong>Claude Sonnet 4.6</strong></td>
+                    <td class="mono purple">81</td>
+                    <td class="mono">$3.00</td>
+                    <td class="mono">$15.00</td>
+                    <td class="mono">200K</td>
+                    <td>Instruction following, code review, nuanced tasks</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout">
+        <strong>💡 The Kimi K2.5 play:</strong> Moonshot AI's model scores 89 quality for $0.45 input — that's 85% cheaper than Sonnet with higher quality scores. Chinese labs are eating this tier alive on price.
+    </div>
+    <span class="slide-num">04</span>
+</section>
+
+<!-- SLIDE 5: Tier 3 — Value -->
+<section class="slide" data-title="Tier 3 — Value">
+    <div class="label">Tier 3</div>
+    <h2 style="color:var(--tier3);">Value Models</h2>
+    <p class="subtitle" style="margin-bottom:20px;">Pennies per million tokens. Use for volume, bulk processing, and triage layers.</p>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Model</th><th>Quality</th><th>Input/M</th><th>Output/M</th><th>Context</th><th>Best For</th></tr>
+            </thead>
+            <tbody>
+                <tr class="highlight-row">
+                    <td><strong>DeepSeek V3.2</strong></td>
+                    <td class="mono blue">79</td>
+                    <td class="mono green">$0.25</td>
+                    <td class="mono green">$0.40</td>
+                    <td class="mono">164K</td>
+                    <td>General tasks. Value score 197.5 — king of $/quality</td>
+                </tr>
+                <tr>
+                    <td><strong>MiniMax M2.5</strong></td>
+                    <td class="mono blue">79</td>
+                    <td class="mono green">$0.30</td>
+                    <td class="mono green">$1.20</td>
+                    <td class="mono">197K</td>
+                    <td>Long-form content, multilingual</td>
+                </tr>
+                <tr>
+                    <td><strong>GPT-5 Mini</strong></td>
+                    <td class="mono blue">77</td>
+                    <td class="mono">$0.25</td>
+                    <td class="mono">$2.00</td>
+                    <td class="mono">200K</td>
+                    <td>When you need OpenAI reliability, cheap</td>
+                </tr>
+                <tr>
+                    <td><strong>Gemini 2.5 Flash</strong></td>
+                    <td class="mono blue">~75</td>
+                    <td class="mono green">$0.15</td>
+                    <td class="mono green">$0.60</td>
+                    <td class="mono">2M</td>
+                    <td>Cheapest with massive context. Free tier available</td>
+                </tr>
+                <tr>
+                    <td><strong>GPT-5 Nano</strong></td>
+                    <td class="mono blue">~65</td>
+                    <td class="mono green">$0.05</td>
+                    <td class="mono green">$0.40</td>
+                    <td class="mono">128K</td>
+                    <td>High-volume simple classification, routing</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout">
+        <strong>💡 DeepSeek off-peak hack:</strong> 50% off during 16:30–00:30 GMT. Schedule batch jobs in that window and you're at $0.12/$0.20 per million. Absurdly cheap for quality 79.
+    </div>
+    <span class="slide-num">05</span>
+</section>
+
+<!-- SLIDE 6: Tier 4 — Local -->
+<section class="slide" data-title="Tier 4 — Local / Edge">
+    <div class="label">Tier 4</div>
+    <h2 style="color:var(--tier4);">Local / Edge Models</h2>
+    <p class="subtitle" style="margin-bottom:20px;">Zero ongoing cost. Run on your own hardware. Full data privacy.</p>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Model</th><th>Params</th><th>VRAM (Q4)</th><th>Your Mac Mini (M4/16GB)</th><th>Strengths</th></tr>
+            </thead>
+            <tbody>
+                <tr class="highlight-row">
+                    <td><strong>Qwen 3.5-9B</strong></td>
+                    <td class="mono">9B</td>
+                    <td class="mono green">~5.5 GB</td>
+                    <td class="mono green">✅ 40–55 t/s</td>
+                    <td>Best-in-class tool calling (BFCL 66.1), 262K context, multimodal</td>
+                </tr>
+                <tr>
+                    <td><strong>Qwen 3.5-4B</strong></td>
+                    <td class="mono">4B</td>
+                    <td class="mono green">~2.8 GB</td>
+                    <td class="mono green">✅ 70–100 t/s</td>
+                    <td>Agent tasks (TAU2 79.9), fast, multimodal</td>
+                </tr>
+                <tr>
+                    <td><strong>Llama 4 Scout</strong></td>
+                    <td class="mono">17B (3.5B active)</td>
+                    <td class="mono green">~6 GB</td>
+                    <td class="mono green">✅ 35–50 t/s</td>
+                    <td>10M context, MoE efficient, general purpose</td>
+                </tr>
+                <tr>
+                    <td><strong>Gemma 3-12B</strong></td>
+                    <td class="mono">12B</td>
+                    <td class="mono orange">~7.5 GB</td>
+                    <td class="mono orange">⚠️ 25–35 t/s</td>
+                    <td>Google quality, strong on STEM, tight fit on 16GB</td>
+                </tr>
+                <tr>
+                    <td><strong>Phi-4 14B</strong></td>
+                    <td class="mono">14B</td>
+                    <td class="mono orange">~8.5 GB</td>
+                    <td class="mono orange">⚠️ 20–30 t/s</td>
+                    <td>Math/science specialist, Microsoft, tight fit</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout">
+        <strong>⚠️ Your hardware (M4 Mac Mini, 16GB):</strong> Comfortable with anything ≤9B. Models 12B+ will run but leave little headroom for OS + other apps. The Qwen 3.5-9B is the sweet spot — best tool calling of any local model, and fits comfortably.
+    </div>
+    <span class="slide-num">06</span>
+</section>
+
+<!-- SLIDE 7: Hardware Reality Check -->
+<section class="slide" data-title="Hardware Requirements">
+    <div class="label">Local Models</div>
+    <h2>Hardware Reality Check</h2>
+    <p class="subtitle" style="margin-bottom: 24px;">What you need to run each model class locally.</p>
+
+    <div class="card-grid card-grid-3">
+        <div class="card" style="border-top: 3px solid var(--tier4);">
+            <h3>Small (≤9B)</h3>
+            <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:14px;">Qwen 3.5-9B, Gemma 3-4B, Phi-4 Mini</p>
+            <div class="stat"><span class="stat-label">Min RAM</span><span class="stat-value green">8 GB</span></div>
+            <div class="stat"><span class="stat-label">Ideal RAM</span><span class="stat-value">16 GB</span></div>
+            <div class="stat"><span class="stat-label">Speed</span><span class="stat-value">40–100 t/s</span></div>
+            <div class="stat"><span class="stat-label">Hardware</span><span class="stat-value">M1+ Mac, RTX 3060</span></div>
+            <div class="stat"><span class="stat-label">Your Mini</span><span class="stat-value green">✅ Perfect</span></div>
+            <div class="stat"><span class="stat-label">Cost</span><span class="stat-value">$0 (already own it)</span></div>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent2);">
+            <h3>Medium (12B–35B)</h3>
+            <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:14px;">Qwen 3.5-35B, Llama 4 Maverick, Gemma 12B</p>
+            <div class="stat"><span class="stat-label">Min RAM</span><span class="stat-value orange">24 GB</span></div>
+            <div class="stat"><span class="stat-label">Ideal RAM</span><span class="stat-value">32–48 GB</span></div>
+            <div class="stat"><span class="stat-label">Speed</span><span class="stat-value">15–40 t/s</span></div>
+            <div class="stat"><span class="stat-label">Hardware</span><span class="stat-value">M2 Pro+ 32GB, RTX 4090</span></div>
+            <div class="stat"><span class="stat-label">Your Mini</span><span class="stat-value red">❌ Not enough RAM</span></div>
+            <div class="stat"><span class="stat-label">Upgrade</span><span class="stat-value">~$800–$1,600</span></div>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--tier1);">
+            <h3>Large (70B+)</h3>
+            <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:14px;">Llama 4 Behemoth, Qwen 3-235B, DeepSeek V3</p>
+            <div class="stat"><span class="stat-label">Min RAM</span><span class="stat-value red">64 GB</span></div>
+            <div class="stat"><span class="stat-label">Ideal RAM</span><span class="stat-value">96–192 GB</span></div>
+            <div class="stat"><span class="stat-label">Speed</span><span class="stat-value">3–15 t/s</span></div>
+            <div class="stat"><span class="stat-label">Hardware</span><span class="stat-value">M2 Ultra, multi-GPU</span></div>
+            <div class="stat"><span class="stat-label">Your Mini</span><span class="stat-value red">❌ Way too big</span></div>
+            <div class="stat"><span class="stat-label">Upgrade</span><span class="stat-value">$3,000–$10,000+</span></div>
+        </div>
+    </div>
+
+    <div class="callout">
+        <strong>Bottom line:</strong> Your M4 Mini with 16GB is a great Tier 4 machine for ≤9B models. To run 35B models, you'd need to upgrade to a Mac Mini with 32GB+ ($800+) or a Mac Studio. For 70B+, you're looking at M2/M4 Ultra territory ($4K+) or cloud hosting.
+    </div>
+    <span class="slide-num">07</span>
+</section>
+
+<!-- SLIDE 8: Quality Comparison Bar Chart -->
+<section class="slide" data-title="Quality Comparison">
+    <div class="label">Benchmarks</div>
+    <h2>Quality Score Comparison</h2>
+    <p class="subtitle" style="margin-bottom: 10px;">Independent quality scores (Theozard benchmark, 0–100). Higher = better.</p>
+
+    <div class="bar-chart" id="qualityChart">
+        <div class="bar-row"><span class="bar-label mono" style="color:var(--tier1)">Opus 4.6</span><div class="bar-track"><div class="bar-fill" style="width:100%; background: linear-gradient(90deg, var(--tier1), #fbbf24);" data-width="100">100</div></div></div>
+        <div class="bar-row"><span class="bar-label mono" style="color:var(--tier2)">GPT-5.2</span><div class="bar-track"><div class="bar-fill" style="width:96%; background: linear-gradient(90deg, var(--tier2), #a78bfa);" data-width="96">96</div></div></div>
+        <div class="bar-row"><span class="bar-label mono" style="color:var(--tier1)">GLM-5</span><div class="bar-track"><div class="bar-fill" style="width:94%; background: linear-gradient(90deg, var(--tier1), #fbbf24);" data-width="94">94</div></div></div>
+        <div class="bar-row"><span class="bar-label mono" style="color:var(--tier2)">Gemini 3 Pro</span><div class="bar-track"><div class="bar-fill" style="width:91%; background: linear-gradient(90deg, var(--tier2), #a78bfa);" data-width="91">91</div></div></div>
+        <div class="bar-row"><span class="bar-label mono" style="color:var(--tier2)">Kimi K2.5</span><div class="bar-track"><div class="bar-fill" style="width:89%; background: linear-gradient(90deg, var(--tier2), #a78bfa);" data-width="89">89</div></div></div>
+        <div class="bar-row"><span class="bar-label mono" style="color:var(--tier2)">Gemini 3 Flash</span><div class="bar-track"><div class="bar-fill" style="width:87%; background: linear-gradient(90deg, var(--tier2), #a78bfa);" data-width="87">87</div></div></div>
+        <div class="bar-row"><span class="bar-label mono" style="color:var(--tier2)">GPT-5</span><div class="bar-track"><div class="bar-fill" style="width:85%; background: linear-gradient(90deg, var(--tier2), #a78bfa);" data-width="85">85</div></div></div>
+        <div class="bar-row"><span class="bar-label mono" style="color:var(--tier2)">Sonnet 4.6</span><div class="bar-track"><div class="bar-fill" style="width:81%; background: linear-gradient(90deg, var(--tier2), #a78bfa);" data-width="81">81</div></div></div>
+        <div class="bar-row"><span class="bar-label mono" style="color:var(--tier3)">DeepSeek V3.2</span><div class="bar-track"><div class="bar-fill" style="width:79%; background: linear-gradient(90deg, var(--tier3), #22d3ee);" data-width="79">79</div></div></div>
+        <div class="bar-row"><span class="bar-label mono" style="color:var(--tier3)">MiniMax M2.5</span><div class="bar-track"><div class="bar-fill" style="width:79%; background: linear-gradient(90deg, var(--tier3), #22d3ee);" data-width="79">79</div></div></div>
+        <div class="bar-row"><span class="bar-label mono" style="color:var(--tier3)">GPT-5 Mini</span><div class="bar-track"><div class="bar-fill" style="width:77%; background: linear-gradient(90deg, var(--tier3), #22d3ee);" data-width="77">77</div></div></div>
+        <div class="bar-row"><span class="bar-label mono" style="color:var(--tier4)">Qwen 3.5-9B*</span><div class="bar-track"><div class="bar-fill" style="width:60%; background: linear-gradient(90deg, var(--tier4), #4ade80);" data-width="60">~60</div></div></div>
+        <div class="bar-row"><span class="bar-label mono" style="color:var(--tier4)">Llama 4 Scout*</span><div class="bar-track"><div class="bar-fill" style="width:55%; background: linear-gradient(90deg, var(--tier4), #4ade80);" data-width="55">~55</div></div></div>
+    </div>
+
+    <p style="font-size:0.7rem; color:var(--text-dim); margin-top:12px;">* Local model scores estimated from per-task benchmarks, not directly comparable to Theozard composite scores. Qwen 3.5-9B punches above its weight on tool calling (BFCL 66.1) and agent tasks (TAU2 79.1).</p>
+    <span class="slide-num">08</span>
+</section>
+
+<!-- SLIDE 9: Cost Comparison -->
+<section class="slide" data-title="Cost Analysis">
+    <div class="label">Cost</div>
+    <h2>Real-World Cost Comparison</h2>
+    <p class="subtitle" style="margin-bottom: 16px;">What you'd actually pay for common workloads per month.</p>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Workload</th>
+                    <th style="color:var(--tier1)">Opus 4.6</th>
+                    <th style="color:var(--tier2)">GPT-5.2</th>
+                    <th style="color:var(--tier2)">Kimi K2.5</th>
+                    <th style="color:var(--tier3)">DeepSeek V3.2</th>
+                    <th style="color:var(--tier4)">Local 9B</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Email triage</strong><br><span class="dim" style="font-size:0.75rem;">1K emails/day, classify + summarize</span></td>
+                    <td class="mono red">$975/mo</td>
+                    <td class="mono orange">$473/mo</td>
+                    <td class="mono blue">$80/mo</td>
+                    <td class="mono green">$20/mo</td>
+                    <td class="mono green">$0</td>
+                </tr>
+                <tr>
+                    <td><strong>Code generation</strong><br><span class="dim" style="font-size:0.75rem;">500 requests/day</span></td>
+                    <td class="mono red">$712/mo</td>
+                    <td class="mono orange">$367/mo</td>
+                    <td class="mono blue">$47/mo</td>
+                    <td class="mono green">$14/mo</td>
+                    <td class="mono green">$0</td>
+                </tr>
+                <tr>
+                    <td><strong>Chatbot</strong><br><span class="dim" style="font-size:0.75rem;">10K users, 20 turns/day</span></td>
+                    <td class="mono red">$1,680/mo</td>
+                    <td class="mono orange">$504/mo</td>
+                    <td class="mono blue">$93/mo</td>
+                    <td class="mono green">$13/mo</td>
+                    <td class="mono green">$0</td>
+                </tr>
+                <tr>
+                    <td><strong>RAG pipeline</strong><br><span class="dim" style="font-size:0.75rem;">50K queries/month</span></td>
+                    <td class="mono red">$2,200/mo</td>
+                    <td class="mono orange">$670/mo</td>
+                    <td class="mono blue">$127/mo</td>
+                    <td class="mono green">$32/mo</td>
+                    <td class="mono green">$0</td>
+                </tr>
+                <tr>
+                    <td><strong>Doc summarization</strong><br><span class="dim" style="font-size:0.75rem;">1,000 docs (10pg each)</span></td>
+                    <td class="mono orange">$32.50</td>
+                    <td class="mono">$14.00</td>
+                    <td class="mono green">$2.50</td>
+                    <td class="mono green">$0.70</td>
+                    <td class="mono green">$0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout">
+        <strong>Key insight:</strong> For high-volume tasks (email, chatbots, triage), the cost difference between tiers is 50–100x. A chatbot on Opus costs $1,680/mo. On DeepSeek: $13. On local: $0. Most chatbot queries don't need Opus-level intelligence.
+    </div>
+    <span class="slide-num">09</span>
+</section>
+
+<!-- SLIDE 10: Task → Model Decision Framework -->
+<section class="slide" data-title="Decision Framework">
+    <div class="label">Framework</div>
+    <h2>Which Model for Which Task?</h2>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Task Type</th><th>Recommended Tier</th><th>Top Pick</th><th>Why</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>🧠 <strong>Complex reasoning / strategy</strong></td>
+                    <td><span class="tier-badge tier-1">Tier 1</span></td>
+                    <td class="mono">Opus 4.6</td>
+                    <td>Nuance, multi-step logic, high-stakes decisions</td>
+                </tr>
+                <tr>
+                    <td>💻 <strong>Code generation / review</strong></td>
+                    <td><span class="tier-badge tier-2">Tier 2</span></td>
+                    <td class="mono">GPT-5.2</td>
+                    <td>Best coding benchmarks at reasonable price</td>
+                </tr>
+                <tr>
+                    <td>📧 <strong>Email drafting / editing</strong></td>
+                    <td><span class="tier-badge tier-2">Tier 2</span></td>
+                    <td class="mono">Sonnet 4.6</td>
+                    <td>Strong instruction following, natural tone</td>
+                </tr>
+                <tr>
+                    <td>🔍 <strong>Research / analysis</strong></td>
+                    <td><span class="tier-badge tier-1">Tier 1</span></td>
+                    <td class="mono">Opus 4.6</td>
+                    <td>Long context (1M), deep comprehension</td>
+                </tr>
+                <tr>
+                    <td>🖼️ <strong>Image/video understanding</strong></td>
+                    <td><span class="tier-badge tier-2">Tier 2</span></td>
+                    <td class="mono">Gemini 3 Flash</td>
+                    <td>Native multimodal, cheap, fast</td>
+                </tr>
+                <tr>
+                    <td>📊 <strong>Data extraction / parsing</strong></td>
+                    <td><span class="tier-badge tier-3">Tier 3</span></td>
+                    <td class="mono">DeepSeek V3.2</td>
+                    <td>Structured output at pennies. JSON mode reliable</td>
+                </tr>
+                <tr>
+                    <td>🏷️ <strong>Classification / triage</strong></td>
+                    <td><span class="tier-badge tier-3">Tier 3</span></td>
+                    <td class="mono">GPT-5 Nano</td>
+                    <td>$0.05/M input. Fast. Simple routing decisions</td>
+                </tr>
+                <tr>
+                    <td>🤖 <strong>Tool calling / agents</strong></td>
+                    <td><span class="tier-badge tier-4">Tier 4</span></td>
+                    <td class="mono">Qwen 3.5-9B</td>
+                    <td>BFCL 66.1 — best tool calling for size. Free, local</td>
+                </tr>
+                <tr>
+                    <td>📝 <strong>Summarization (bulk)</strong></td>
+                    <td><span class="tier-badge tier-3">Tier 3</span></td>
+                    <td class="mono">Gemini 2.5 Flash</td>
+                    <td>2M context, $0.15 input, free tier available</td>
+                </tr>
+                <tr>
+                    <td>🔒 <strong>Privacy-sensitive processing</strong></td>
+                    <td><span class="tier-badge tier-4">Tier 4</span></td>
+                    <td class="mono">Qwen 3.5-9B</td>
+                    <td>Data never leaves your machine</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <span class="slide-num">10</span>
+</section>
+
+<!-- SLIDE 11: Your Real-World Scenarios -->
+<section class="slide" data-title="Your Scenarios">
+    <div class="label">Applied</div>
+    <h2>Mike's Scenarios</h2>
+    <p class="subtitle" style="margin-bottom:20px;">How this framework maps to your actual work.</p>
+
+    <div class="scenario">
+        <div class="scenario-header">
+            <span class="scenario-title">🏥 GenHealth — Prior Auth Processing</span>
+            <span class="tier-badge tier-3">Tier 3 → DeepSeek V3.2</span>
+        </div>
+        <div class="scenario-detail">
+            High volume, structured extraction from clinical docs. Doesn't need creative reasoning — needs reliable JSON output at scale. <strong>$0.25/M input vs $5/M on Opus = 20x savings.</strong> Use Tier 1 only for edge cases / appeals writing.
+        </div>
+    </div>
+
+    <div class="scenario">
+        <div class="scenario-header">
+            <span class="scenario-title">📊 Sales Pitch Decks & Strategy</span>
+            <span class="tier-badge tier-1">Tier 1 → Opus 4.6</span>
+        </div>
+        <div class="scenario-detail">
+            Persuasive writing, competitive positioning, nuanced messaging. This is where frontier models justify their cost. <strong>A bad pitch loses the deal. Worth paying $25/M output.</strong>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <div class="scenario-header">
+            <span class="scenario-title">📧 Email Triage & Drafting</span>
+            <span class="tier-badge tier-2">Tier 2 → Kimi K2.5</span>
+        </div>
+        <div class="scenario-detail">
+            Classify importance, draft replies, summarize threads. Quality 89 is more than enough for email. <strong>$0.45/M vs $3/M on Sonnet. Save ~85% for the same job.</strong>
+        </div>
+    </div>
+
+    <div class="scenario">
+        <div class="scenario-header">
+            <span class="scenario-title">🤖 Loki's Heartbeats & Background Agents</span>
+            <span class="tier-badge tier-4">Tier 4 → Qwen 3.5-9B (local)</span>
+        </div>
+        <div class="scenario-detail">
+            Triage checks, tool routing, simple classification running 24/7. Currently uses Haiku ($1/M). <strong>Local model = $0 forever, no API dependency, faster response.</strong> Run on the Mac Mini you already own.
+        </div>
+    </div>
+
+    <div class="scenario">
+        <div class="scenario-header">
+            <span class="scenario-title">🌐 .MD Health Site — Q&A Widget</span>
+            <span class="tier-badge tier-3">Tier 3 → Gemini 2.5 Flash</span>
+        </div>
+        <div class="scenario-detail">
+            User-facing health Q&A needs to be good but also cheap at scale. Gemini has a free tier (1K req/day) and 2M context for loading medical references. <strong>Free up to ~30K queries/month.</strong>
+        </div>
+    </div>
+    <span class="slide-num">11</span>
+</section>
+
+<!-- SLIDE 12: Decision Tree -->
+<section class="slide" data-title="Quick Decision Tree">
+    <div class="label">Decision Tree</div>
+    <h2>Quick Decision Flowchart</h2>
+    <p class="subtitle" style="margin-bottom: 24px;">Start here when choosing a model.</p>
+
+    <div style="display: flex; flex-direction: column; gap: 12px; max-width: 800px;">
+        <div class="scenario" style="border-left: 3px solid var(--accent);">
+            <div class="scenario-detail">
+                <strong style="color:var(--accent);">Q1: Does the data need to stay on-device?</strong><br>
+                → Yes → <span class="tier-badge tier-4" style="font-size:0.65rem;">Tier 4 Local</span> Qwen 3.5-9B or Llama 4 Scout
+            </div>
+        </div>
+        <div class="scenario" style="border-left: 3px solid var(--accent2);">
+            <div class="scenario-detail">
+                <strong style="color:var(--accent2);">Q2: Is being wrong expensive?</strong> (legal, medical, financial, strategy)<br>
+                → Yes → <span class="tier-badge tier-1" style="font-size:0.65rem;">Tier 1 Frontier</span> Opus 4.6 or GPT-5.2 Pro
+            </div>
+        </div>
+        <div class="scenario" style="border-left: 3px solid var(--tier2);">
+            <div class="scenario-detail">
+                <strong style="color:var(--tier2);">Q3: Is it creative, nuanced, or requires good writing?</strong><br>
+                → Yes → <span class="tier-badge tier-2" style="font-size:0.65rem;">Tier 2 Performance</span> Sonnet 4.6, GPT-5.2, or Kimi K2.5
+            </div>
+        </div>
+        <div class="scenario" style="border-left: 3px solid var(--tier3);">
+            <div class="scenario-detail">
+                <strong style="color:var(--tier3);">Q4: Is it high-volume or structured?</strong> (parsing, classification, bulk processing)<br>
+                → Yes → <span class="tier-badge tier-3" style="font-size:0.65rem;">Tier 3 Value</span> DeepSeek V3.2, GPT-5 Nano, or Gemini Flash
+            </div>
+        </div>
+        <div class="scenario" style="border-left: 3px solid var(--accent3);">
+            <div class="scenario-detail">
+                <strong style="color:var(--accent3);">Default:</strong> Start with <span class="tier-badge tier-2" style="font-size:0.65rem;">Tier 2</span> — optimize down once you know your quality floor.
+            </div>
+        </div>
+    </div>
+
+    <div class="callout" style="margin-top: 20px;">
+        <strong>Pro move:</strong> Layer your tiers. Use Tier 3/4 for triage → route complex cases to Tier 1/2. You get frontier quality where it matters and value pricing for the 80% that doesn't need it.
+    </div>
+    <span class="slide-num">12</span>
+</section>
+
+<!-- SLIDE 13: Key Takeaways -->
+<section class="slide" data-title="Takeaways">
+    <div class="label">Summary</div>
+    <h2>Key Takeaways</h2>
+
+    <div class="card-grid card-grid-2" style="margin-top: 24px;">
+        <div class="card">
+            <h3 style="color:var(--tier1);">🏆 Frontier is for thinking</h3>
+            <p style="font-size:0.9rem; color:var(--text-dim);">Strategy, persuasion, complex reasoning, high-stakes output. Use Opus 4.6 or GPT-5.2 Pro. Don't waste these on classification or parsing.</p>
+        </div>
+        <div class="card">
+            <h3 style="color:var(--tier2);">⚡ Chinese labs are disrupting Tier 2</h3>
+            <p style="font-size:0.9rem; color:var(--text-dim);">GLM-5 (quality 94, $0.95), Kimi K2.5 (89, $0.45), DeepSeek V3.2 (79, $0.25). These aren't budget models — they're genuine competitors at 5-10x lower price.</p>
+        </div>
+        <div class="card">
+            <h3 style="color:var(--tier4);">🏠 Local models are finally useful</h3>
+            <p style="font-size:0.9rem; color:var(--text-dim);">Qwen 3.5-9B has best-in-class tool calling (beats 30B and 80B models). Runs at 50 t/s on your Mac Mini for $0. The agent-on-device era is here.</p>
+        </div>
+        <div class="card">
+            <h3 style="color:var(--accent);">📐 Layer your tiers</h3>
+            <p style="font-size:0.9rem; color:var(--text-dim);">Don't pick one model for everything. Use cheap models for triage, mid-tier for daily work, frontier for critical tasks. A tiered system saves 60-90% vs using frontier for everything.</p>
+        </div>
+    </div>
+
+    <div style="margin-top: 30px; text-align: center;">
+        <p style="font-size: 0.8rem; color: var(--text-dim);">
+            Data sourced from Theozard benchmarks, provider pricing pages, and Qwen 3.5 technical report. March 2026.<br>
+            Pricing changes frequently — verify before making purchasing decisions.
+        </p>
+    </div>
+    <span class="slide-num">13</span>
+</section>
+
+<script>
+    const slides = document.querySelectorAll('.slide');
+    const progressBar = document.getElementById('progress');
+    const navDotsContainer = document.getElementById('navDots');
+    let currentSlide = 0;
+    let isNavigating = false;
+
+    // Create nav dots
+    slides.forEach((slide, i) => {
+        const dot = document.createElement('div');
+        dot.className = 'nav-dot';
+        dot.dataset.slide = i;
+        const tooltip = document.createElement('span');
+        tooltip.className = 'tooltip';
+        tooltip.textContent = slide.dataset.title || `Slide ${i + 1}`;
+        dot.appendChild(tooltip);
+        navDotsContainer.appendChild(dot);
+    });
+
+    const navDots = document.querySelectorAll('.nav-dot');
+
+    function goToSlide(index, smooth = true) {
+        if (index < 0 || index >= slides.length || isNavigating) return;
+        isNavigating = true;
+        const targetSlide = slides[index];
+        targetSlide.classList.add('visible');
+        targetSlide.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto' });
+        currentSlide = index;
+        updateNav();
+        updateProgress();
+        setTimeout(() => { isNavigating = false; }, smooth ? 600 : 100);
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && !isNavigating) {
+                entry.target.classList.add('visible');
+                const index = Array.from(slides).indexOf(entry.target);
+                if (index !== currentSlide) {
+                    currentSlide = index;
+                    updateNav();
+                    updateProgress();
+                }
+            }
+        });
+    }, { threshold: 0.3 });
+
+    slides.forEach(slide => observer.observe(slide));
+
+    function updateNav() {
+        navDots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === currentSlide);
+        });
+    }
+
+    function updateProgress() {
+        const progress = ((currentSlide + 1) / slides.length) * 100;
+        progressBar.style.width = progress + '%';
+    }
+
+    navDots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            goToSlide(parseInt(dot.dataset.slide));
+        });
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
+            e.preventDefault();
+            goToSlide(currentSlide + 1);
+        } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+            e.preventDefault();
+            goToSlide(currentSlide - 1);
+        }
+    });
+
+    let touchStartY = 0;
+    document.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+        const diff = touchStartY - e.changedTouches[0].clientY;
+        if (Math.abs(diff) > 50) {
+            goToSlide(currentSlide + (diff > 0 ? 1 : -1));
+        }
+    }, { passive: true });
+
+    // Initial state
+    slides[0].classList.add('visible');
+    updateProgress();
+</script>
+
+</body>
+</html>
