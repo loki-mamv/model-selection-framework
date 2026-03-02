@@ -1190,7 +1190,219 @@
     <span class="slide-num">14</span>
 </section>
 
-<!-- SLIDE 15: Credits -->
+<!-- SLIDE 15: Reasoning Models -->
+<section class="slide" data-title="Reasoning Models">
+    <div class="label">Special Category</div>
+    <h2>Reasoning Models — Think Harder, Pay More</h2>
+    <p class="subtitle" style="margin-bottom: 20px;">These models spend extra compute "thinking" before answering. Dramatically better on math, logic, and code — but 3–10x the cost and latency.</p>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Model</th><th>Base Tier</th><th>Input/M</th><th>Output/M</th><th>Thinking Cost</th><th>Best For</th></tr>
+            </thead>
+            <tbody>
+                <tr class="highlight-row">
+                    <td><strong>o3 Pro</strong></td>
+                    <td><span class="tier-badge tier-1" style="font-size:0.6rem;">Frontier</span></td>
+                    <td class="mono">$20.00</td>
+                    <td class="mono">$80.00</td>
+                    <td class="mono dim">Thinking tokens billed as output</td>
+                    <td>Hardest math, formal proofs, competition-level problems</td>
+                </tr>
+                <tr>
+                    <td><strong>o3</strong></td>
+                    <td><span class="tier-badge tier-2" style="font-size:0.6rem;">Performance</span></td>
+                    <td class="mono">$2.00</td>
+                    <td class="mono">$8.00</td>
+                    <td class="mono dim">~3–5x base output cost</td>
+                    <td>Complex code, multi-step logic, science</td>
+                </tr>
+                <tr>
+                    <td><strong>DeepSeek R1</strong></td>
+                    <td><span class="tier-badge tier-3" style="font-size:0.6rem;">Value</span></td>
+                    <td class="mono green">$0.55</td>
+                    <td class="mono green">$2.19</td>
+                    <td class="mono dim">75% off during off-peak</td>
+                    <td>Budget reasoning. Surprisingly strong on AIME/MATH</td>
+                </tr>
+                <tr>
+                    <td><strong>Kimi K2.5-Thinking</strong></td>
+                    <td><span class="tier-badge tier-3" style="font-size:0.6rem;">Value</span></td>
+                    <td class="mono green">$0.47</td>
+                    <td class="mono green">$2.00</td>
+                    <td class="mono dim">Quality 77 w/ thinking</td>
+                    <td>Cheapest reasoning model with real capability</td>
+                </tr>
+                <tr>
+                    <td><strong>Qwen QwQ-32B</strong></td>
+                    <td><span class="tier-badge tier-4" style="font-size:0.6rem;">Local</span></td>
+                    <td class="mono green">Free</td>
+                    <td class="mono green">Free</td>
+                    <td class="mono dim">Needs 32GB+ RAM</td>
+                    <td>Local reasoning. Can't run on 16GB — needs beefy hardware</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout">
+        <strong>When to use reasoning models:</strong> Math competitions, formal logic, complex debugging, scientific analysis. <strong>When NOT to:</strong> Summarization, email drafting, classification, data extraction — standard models are just as good and 5x cheaper. Reasoning tokens add up fast.
+    </div>
+    <span class="slide-num">15</span>
+</section>
+
+<!-- SLIDE 16: API vs Subscription -->
+<section class="slide" data-title="API vs Subscription">
+    <div class="label">Pricing Models</div>
+    <h2>API vs Subscription — Which Makes Sense?</h2>
+    <p class="subtitle" style="margin-bottom: 20px;">Most people default to $20/mo subscriptions. Sometimes that's right. Sometimes you're overpaying 10x.</p>
+
+    <div class="card-grid card-grid-2">
+        <div class="card" style="border-top: 3px solid var(--accent2);">
+            <h3>📱 Subscription</h3>
+            <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:14px;">ChatGPT Plus, Claude Pro, Gemini Advanced</p>
+            <div class="stat"><span class="stat-label">Cost</span><span class="stat-value">$20–$200/mo flat</span></div>
+            <div class="stat"><span class="stat-label">Best when</span><span class="stat-value">Daily personal use</span></div>
+            <div class="stat"><span class="stat-label">Limits</span><span class="stat-value">Message caps, rate limits</span></div>
+            <div class="stat"><span class="stat-label">Models</span><span class="stat-value">Latest flagship only</span></div>
+            <div class="stat"><span class="stat-label">Integration</span><span class="stat-value">Chat UI only</span></div>
+            <div class="stat"><span class="stat-label">Good for</span><span class="stat-value">Individuals, light use</span></div>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent);">
+            <h3>⚡ API (Pay-per-token)</h3>
+            <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:14px;">OpenAI API, Anthropic API, Google AI Studio</p>
+            <div class="stat"><span class="stat-label">Cost</span><span class="stat-value">$0.05–$25/M tokens</span></div>
+            <div class="stat"><span class="stat-label">Best when</span><span class="stat-value">Building products, automation</span></div>
+            <div class="stat"><span class="stat-label">Limits</span><span class="stat-value">Rate limits only (scalable)</span></div>
+            <div class="stat"><span class="stat-label">Models</span><span class="stat-value">Full model menu, mix & match</span></div>
+            <div class="stat"><span class="stat-label">Integration</span><span class="stat-value">Any app, workflow, agent</span></div>
+            <div class="stat"><span class="stat-label">Good for</span><span class="stat-value">Teams, products, automation</span></div>
+        </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <div class="scenario" style="border-left: 3px solid var(--accent3);">
+            <div class="scenario-detail">
+                <strong style="color:var(--accent3);">The breakeven math:</strong> ChatGPT Plus ($20/mo) gives you ~unlimited GPT-5 access. Via API, $20 buys you ~1.4M output tokens of GPT-5.2 — that's roughly <strong>1,000+ full responses</strong>. If you send <100 messages/day, the sub is often cheaper. If you're building automation that processes thousands of requests, API wins by 10–100x because you can use cheaper models for most tasks.
+            </div>
+        </div>
+    </div>
+    <span class="slide-num">16</span>
+</section>
+
+<!-- SLIDE 17: Multimodal Comparison -->
+<section class="slide" data-title="Multimodal Capabilities">
+    <div class="label">Multimodal</div>
+    <h2>Who Can See, Hear, and Create?</h2>
+    <p class="subtitle" style="margin-bottom: 20px;">Not all models handle images, audio, and video equally. Here's what actually works today.</p>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr><th>Model</th><th>📷 Image Input</th><th>🎨 Image Gen</th><th>🎵 Audio Input</th><th>🎬 Video Input</th><th>📄 PDF/Docs</th></tr>
+            </thead>
+            <tbody>
+                <tr class="highlight-row">
+                    <td><strong>Gemini 3 Pro</strong></td>
+                    <td class="green mono">✅ Native</td>
+                    <td class="green mono">✅ Native</td>
+                    <td class="green mono">✅ Native</td>
+                    <td class="green mono">✅ Native</td>
+                    <td class="green mono">✅</td>
+                </tr>
+                <tr>
+                    <td><strong>GPT-5.2</strong></td>
+                    <td class="green mono">✅ Native</td>
+                    <td class="blue mono">✅ DALL-E</td>
+                    <td class="green mono">✅ Whisper</td>
+                    <td class="orange mono">⚠️ Frames</td>
+                    <td class="green mono">✅</td>
+                </tr>
+                <tr>
+                    <td><strong>Claude Opus 4.6</strong></td>
+                    <td class="green mono">✅ Native</td>
+                    <td class="red mono">❌</td>
+                    <td class="red mono">❌</td>
+                    <td class="red mono">❌</td>
+                    <td class="green mono">✅</td>
+                </tr>
+                <tr>
+                    <td><strong>Kimi K2.5</strong></td>
+                    <td class="green mono">✅ Native</td>
+                    <td class="red mono">❌</td>
+                    <td class="red mono">❌</td>
+                    <td class="orange mono">⚠️ Limited</td>
+                    <td class="green mono">✅</td>
+                </tr>
+                <tr>
+                    <td><strong>DeepSeek V3.2</strong></td>
+                    <td class="orange mono">⚠️ Basic</td>
+                    <td class="red mono">❌</td>
+                    <td class="red mono">❌</td>
+                    <td class="red mono">❌</td>
+                    <td class="green mono">✅</td>
+                </tr>
+                <tr>
+                    <td><strong>Qwen 3.5-9B</strong></td>
+                    <td class="green mono">✅ Native</td>
+                    <td class="red mono">❌</td>
+                    <td class="red mono">❌</td>
+                    <td class="red mono">❌</td>
+                    <td class="orange mono">⚠️</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="callout">
+        <strong>Gemini dominates multimodal.</strong> It's the only model with native image generation, audio understanding, and video processing in a single API. If your workflow involves mixed media (screenshots, voice memos, video clips), Gemini is the default choice regardless of tier. Claude and DeepSeek are text-first models that happen to accept images.
+    </div>
+    <span class="slide-num">17</span>
+</section>
+
+<!-- SLIDE 18: How to Test -->
+<section class="slide" data-title="How to Test">
+    <div class="label">Practical</div>
+    <h2>How to Find Your Model in 30 Minutes</h2>
+    <p class="subtitle" style="margin-bottom: 24px;">Don't guess. Test. Here's the framework.</p>
+
+    <div style="display: flex; flex-direction: column; gap: 16px; max-width: 800px;">
+        <div class="scenario" style="border-left: 3px solid var(--tier1);">
+            <div class="scenario-header">
+                <span class="scenario-title">Step 1: Build Your Test Set (10 min)</span>
+            </div>
+            <div class="scenario-detail">
+                Pick <strong>10 real prompts</strong> from your actual work — not toy examples. Include easy ones (classification, formatting) and hard ones (analysis, writing, multi-step reasoning). These are your benchmark. Save them in a doc.
+            </div>
+        </div>
+
+        <div class="scenario" style="border-left: 3px solid var(--tier2);">
+            <div class="scenario-header">
+                <span class="scenario-title">Step 2: Run Blind Comparison (15 min)</span>
+            </div>
+            <div class="scenario-detail">
+                Run all 10 prompts through <strong>3 models</strong> (one from each tier you're considering). Copy outputs into a spreadsheet <strong>without labeling which model produced which</strong>. Then score each output 1–5. This removes the bias of "Opus must be better because it costs more."
+            </div>
+        </div>
+
+        <div class="scenario" style="border-left: 3px solid var(--tier3);">
+            <div class="scenario-header">
+                <span class="scenario-title">Step 3: Calculate the Real Delta (5 min)</span>
+            </div>
+            <div class="scenario-detail">
+                Compare scores. If the cheap model scores 4.2 avg and the expensive model scores 4.5 avg — is that 0.3 difference worth 10x the cost? Often the answer is <strong>no for 80% of tasks, yes for 20%</strong>. That tells you exactly where to use each tier.
+            </div>
+        </div>
+    </div>
+
+    <div class="callout" style="margin-top: 20px;">
+        <strong>Free tools for testing:</strong> Use <a href="https://chat.lmsys.org" style="color:var(--accent);">Chatbot Arena</a> for blind side-by-side comparisons, <a href="https://ai.google.dev" style="color:var(--accent);">Google AI Studio</a> (free tier) to test Gemini, and <a href="https://openrouter.ai" style="color:var(--accent);">OpenRouter</a> to access 200+ models through one API with pay-as-you-go pricing.
+    </div>
+    <span class="slide-num">18</span>
+</section>
+
+<!-- SLIDE 19: Credits  -->
 <section class="slide" data-title="Credits">
     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 100%;">
         <div class="label" style="margin-bottom: 24px;">Made By</div>
@@ -1215,7 +1427,7 @@
             Data sourced from Theozard benchmarks, provider pricing pages, and Qwen 3.5 technical report.<br>March 2026. Pricing changes frequently.
         </p>
     </div>
-    <span class="slide-num">15</span>
+    <span class="slide-num">19</span>
 </section>
 
 <script>
